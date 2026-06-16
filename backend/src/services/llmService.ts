@@ -4,7 +4,13 @@ import { STORE_POLICIES } from "../config/storePolicies";
 import { trimHistory, HistoryMessage } from "../utils/trimHistory";
 import { buildPrompt } from "../utils/buildPrompt";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+let groq: Groq;
+try {
+  groq = new Groq({ apiKey: process.env.GROQ_API_KEY || "missing" });
+} catch (e) {
+  // Prevent server crash if env is completely missing
+  groq = new Groq({ apiKey: "missing" });
+}
 
 export async function generateReply(
   history: HistoryMessage[],
