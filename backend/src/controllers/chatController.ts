@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Sender } from "@prisma/client";
 import { createConversation, getConversation } from "../services/conversationService";
 import { saveMessage } from "../services/messageService";
+import { generateReply } from "../services/llmService";
 
 export async function postMessage(
   req: Request,
@@ -12,6 +13,7 @@ export async function postMessage(
     const { message, sessionId } = req.body;
 
     let conversationId = sessionId as string | undefined;
+    let history: { sender: "user" | "ai"; text: string }[] = [];
 
     if (conversationId) {
       const existing = await getConversation(conversationId);
@@ -19,6 +21,10 @@ export async function postMessage(
         res.status(404).json({ error: "Session not found." });
         return;
       }
+      history = existing.messages.map((m) => ({
+        sender: m.sender as "user" | "ai",
+        text: m.text,
+      }));
     } else {
       const conversation = await createConversation();
       conversationId = conversation.id;
@@ -26,7 +32,7 @@ export async function postMessage(
 
     await saveMessage(conversationId, Sender.user, message);
 
-    const reply = "AI reply coming soon";
+    const reply = await generateReply(history, message);
     await saveMessage(conversationId, Sender.ai, reply);
 
     res.status(200).json({ reply, sessionId: conversationId });
