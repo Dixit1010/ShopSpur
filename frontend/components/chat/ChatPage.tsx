@@ -88,7 +88,7 @@ export default function ChatPage() {
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-zinc-950" />
           </div>
           <div>
-            <p className="text-sm font-medium text-zinc-100 leading-none">ShopSpur Support</p>
+            <p className="text-sm font-medium text-zinc-100 leading-none">ShopSpurs Support</p>
             <p className="text-[11px] text-zinc-500 mt-0.5">AI-powered · Usually replies instantly</p>
           </div>
         </div>
